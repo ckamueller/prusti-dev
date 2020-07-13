@@ -9,41 +9,42 @@ use vir::cfg::method::*;
 
 impl fmt::Display for CfgMethod {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(
-            f,
-            "method {}({} args)",
-            self.method_name, self.formal_arg_count
-        )?;
-        writeln!(
-            f,
-            "    returns ({})",
-            self.formal_returns
-                .iter()
-                .map(|x| format!("{:?}", x))
-                .collect::<Vec<String>>()
-                .join(", ")
-        )?;
-        writeln!(f, "{{")?;
-        for local_var in self.local_vars.iter() {
-            writeln!(f, "    {:?}", local_var)?;
-        }
+        unimplemented!(); // requires update for formal arguments, preconditions and postconditions
+        // writeln!(
+        //     f,
+        //     "method {}({} args)",
+        //     self.method_name, self.formal_arg_count
+        // )?;
+        // writeln!(
+        //     f,
+        //     "    returns ({})",
+        //     self.formal_returns
+        //         .iter()
+        //         .map(|x| format!("{:?}", x))
+        //         .collect::<Vec<String>>()
+        //         .join(", ")
+        // )?;
+        // writeln!(f, "{{")?;
+        // for local_var in self.local_vars.iter() {
+        //     writeln!(f, "    {:?}", local_var)?;
+        // }
 
-        for (index, block) in self.basic_blocks.iter().enumerate() {
-            writeln!(
-                f,
-                "  label {} // {}",
-                self.basic_blocks_labels[index], index
-            )?;
-            for inv in &block.invs {
-                writeln!(f, "    inv {}", inv)?;
-            }
-            for stmt in &block.stmts {
-                writeln!(f, "    {}", stmt)?;
-            }
-            writeln!(f, "    {:?}", block.successor)?;
-        }
-        writeln!(f, "  label {}", RETURN_LABEL)?;
-        writeln!(f, "}}")
+        // for (index, block) in self.basic_blocks.iter().enumerate() {
+        //     writeln!(
+        //         f,
+        //         "  label {} // {}",
+        //         self.basic_blocks_labels[index], index
+        //     )?;
+        //     for inv in &block.invs {
+        //         writeln!(f, "    inv {}", inv)?;
+        //     }
+        //     for stmt in &block.stmts {
+        //         writeln!(f, "    {}", stmt)?;
+        //     }
+        //     writeln!(f, "    {:?}", block.successor)?;
+        // }
+        // writeln!(f, "  label {}", RETURN_LABEL)?;
+        // writeln!(f, "}}")
     }
 }
 

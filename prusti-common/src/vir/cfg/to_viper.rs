@@ -54,17 +54,32 @@ impl<'a, 'v> ToViper<'v, viper::Method<'v>> for &'a CfgMethod {
 
         let method_body = Some(ast.seqn(&blocks_ast, &declarations));
 
+        let mut formal_args_decl: Vec<viper::LocalVarDecl> = vec![];
+        for formal_arg in &self.formal_args {
+            formal_args_decl.push(formal_arg.to_viper_decl(ast));
+        }
+
         let mut formal_returns_decl: Vec<viper::LocalVarDecl> = vec![];
         for local_var in &self.formal_returns {
             formal_returns_decl.push(local_var.to_viper_decl(ast));
         }
 
+        let mut preconditions: Vec<viper::Expr> = vec![];
+        for precondition in &self.preconditions {
+            preconditions.push(precondition.to_viper(ast));
+        }
+
+        let mut postconditions: Vec<viper::Expr> = vec![];
+        for postcondition in &self.postconditions {
+            postconditions.push(postcondition.to_viper(ast));
+        }
+
         let method = ast.method(
             &self.method_name,
-            &[],
+            &formal_args_decl,
             &formal_returns_decl,
-            &[],
-            &[],
+            &preconditions,
+            &postconditions,
             method_body,
         );
 
