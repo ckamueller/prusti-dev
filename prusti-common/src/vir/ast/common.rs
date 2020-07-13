@@ -146,6 +146,7 @@ pub enum Type {
     Ref, // At the moment we don't need this
     /// TypedRef: the first parameter is the name of the predicate that encodes the type
     TypedRef(String),
+    Set(Box<Type>),
     Domain(String),
 }
 
@@ -164,6 +165,7 @@ impl fmt::Display for Type {
             &Type::Bool => write!(f, "Bool"),
             &Type::Ref => write!(f, "Ref"),
             &Type::TypedRef(ref name) => write!(f, "Ref({})", name),
+            &Type::Set(_) => unimplemented!(),
             &Type::Domain(ref name) => write!(f, "Domain({})", name),
         }
     }
@@ -184,6 +186,7 @@ impl Type {
             &Type::Int => "int".to_string(),
             &Type::Ref => unimplemented!(),
             &Type::TypedRef(ref pred_name) => format!("{}", pred_name),
+            &Type::Set(_) => unimplemented!(),
             &Type::Domain(ref pred_name) => format!("{}", pred_name),
         }
     }
@@ -219,6 +222,7 @@ impl Type {
             Type::Int => TypeId::Int,
             Type::Ref => unimplemented!(),
             Type::TypedRef(_) => TypeId::Ref,
+            Type::Set(_) => unimplemented!(),
             Type::Domain(_) => TypeId::Domain,
         }
     }

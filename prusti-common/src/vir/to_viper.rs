@@ -76,6 +76,7 @@ impl<'v> ToViper<'v, viper::Type<'v>> for Type {
             &Type::Bool => ast.bool_type(),
             &Type::Ref |
             &Type::TypedRef(_) => ast.ref_type(),
+            &Type::Set(ref type_of_set) => ast.set_type((*type_of_set).to_viper(ast)),
             &Type::Domain(ref name) => ast.domain_type(&name, &[], &[]),
         }
     }

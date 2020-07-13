@@ -56,7 +56,8 @@ impl BuiltinEncoder {
             BuiltinFunctionKind::Unreachable(vir::Type::Ref) => unimplemented!(),
             BuiltinFunctionKind::Unreachable(vir::Type::TypedRef(_)) => {
                 format!("builtin$unreach_ref")
-            }
+            },
+            BuiltinFunctionKind::Unreachable(vir::Type::Set(_)) => unimplemented!(),
             BuiltinFunctionKind::Unreachable(vir::Type::Domain(_)) => {
                 format!("builtin$unreach_domain")
             }
@@ -64,6 +65,7 @@ impl BuiltinEncoder {
             BuiltinFunctionKind::Undefined(vir::Type::Bool) => format!("builtin$undef_bool"),
             BuiltinFunctionKind::Undefined(vir::Type::Ref) => unimplemented!(),
             BuiltinFunctionKind::Undefined(vir::Type::TypedRef(_)) => format!("builtin$undef_ref"),
+            BuiltinFunctionKind::Undefined(vir::Type::Set(_)) => unimplemented!(),
             BuiltinFunctionKind::Undefined(vir::Type::Domain(_)) => format!("builtin$undef_doman"),
         }
     }
