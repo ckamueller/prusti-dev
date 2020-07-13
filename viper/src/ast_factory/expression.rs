@@ -920,6 +920,17 @@ impl<'a> AstFactory<'a> {
         )
     }
 
+    pub fn any_set_contains_with_pos(&self, elem: Expr, set: Expr, pos: Position) -> Expr<'a> {
+        build_ast_node_with_pos!(
+            self,
+            Expr,
+            ast::AnySetContains,
+            elem.to_jobject(),
+            set.to_jobject(),
+            pos.to_jobject()
+        )
+    }
+
     pub fn any_set_cardinality(&self, set: Expr) -> Expr<'a> {
         build_ast_node!(self, Expr, ast::AnySetCardinality, set.to_jobject())
     }

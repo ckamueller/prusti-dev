@@ -78,6 +78,7 @@ pub enum BinOpKind {
     And,
     Or,
     Implies,
+    SetContains
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -226,6 +227,7 @@ impl fmt::Display for BinOpKind {
             &BinOpKind::And => write!(f, "&&"),
             &BinOpKind::Or => write!(f, "||"),
             &BinOpKind::Implies => write!(f, "==>"),
+            &BinOpKind::SetContains => write!(f, "in"),
         }
     }
 }
