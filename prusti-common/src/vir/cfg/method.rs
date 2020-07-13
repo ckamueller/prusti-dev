@@ -18,10 +18,12 @@ pub struct CfgMethod {
     #[serde(skip)]
     pub(super) uuid: Uuid,
     pub(super) method_name: String,
-    pub(in super::super) formal_arg_count: usize,
+    pub(in super::super) formal_args: Vec<LocalVar>,
     pub(in super::super) formal_returns: Vec<LocalVar>,
     pub(in super::super) local_vars: Vec<LocalVar>,
     pub(super) labels: HashSet<String>,
+    pub(super) preconditions: Vec<Expr>,
+    pub(super) postconditions: Vec<Expr>,
     #[serde(skip)]
     pub(super) reserved_labels: HashSet<String>,
     pub basic_blocks: Vec<CfgBlock>, // FIXME: Hack, should be pub(super).
@@ -136,19 +138,23 @@ impl CfgBlockIndex {
 impl CfgMethod {
     pub fn new(
         method_name: String,
-        formal_arg_count: usize,
+        formal_args: Vec<LocalVar>,
         formal_returns: Vec<LocalVar>,
         local_vars: Vec<LocalVar>,
         reserved_labels: Vec<String>,
+        preconditions: Vec<Expr>,
+        postconditions: Vec<Expr>
     ) -> Self {
         CfgMethod {
             uuid: Uuid::new_v4(),
             method_name,
-            formal_arg_count,
+            formal_args,
             formal_returns,
             local_vars,
             labels: HashSet::new(),
             reserved_labels: HashSet::from_iter(reserved_labels),
+            preconditions,
+            postconditions,
             basic_blocks: vec![],
             basic_blocks_labels: vec![],
             fresh_var_index: 0,
@@ -221,6 +227,11 @@ impl CfgMethod {
         local_var
     }
 
+    pub fn add_formal_arg(&mut self, name: &str, typ: Type) {
+        assert!(self.is_fresh_local_name(name));
+        self.formal_args.push(LocalVar::new(name, typ))
+    }
+
     pub fn add_local_var(&mut self, name: &str, typ: Type) {
         assert!(self.is_fresh_local_name(name));
         self.local_vars.push(LocalVar::new(name, typ));
@@ -229,6 +240,14 @@ impl CfgMethod {
     pub fn add_formal_return(&mut self, name: &str, typ: Type) {
         assert!(self.is_fresh_local_name(name));
         self.formal_returns.push(LocalVar::new(name, typ));
+    }
+
+    pub fn add_precondition(&mut self, pre_condition: Expr) {
+        self.preconditions.push(pre_condition);
+    }
+
+    pub fn add_postcondition(&mut self, post_condition: Expr) {
+        self.postconditions.push(post_condition);
     }
 
     pub fn add_stmt(&mut self, index: CfgBlockIndex, stmt: Stmt) {
