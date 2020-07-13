@@ -143,7 +143,7 @@ impl Ord for PermAmount {
 pub enum Type {
     Int,
     Bool,
-    //Ref, // At the moment we don't need this
+    Ref, // At the moment we don't need this
     /// TypedRef: the first parameter is the name of the predicate that encodes the type
     TypedRef(String),
     Domain(String),
@@ -162,7 +162,7 @@ impl fmt::Display for Type {
         match self {
             &Type::Int => write!(f, "Int"),
             &Type::Bool => write!(f, "Bool"),
-            //&Type::Ref => write!(f, "Ref"),
+            &Type::Ref => write!(f, "Ref"),
             &Type::TypedRef(ref name) => write!(f, "Ref({})", name),
             &Type::Domain(ref name) => write!(f, "Domain({})", name),
         }
@@ -182,6 +182,7 @@ impl Type {
         match self {
             &Type::Bool => "bool".to_string(),
             &Type::Int => "int".to_string(),
+            &Type::Ref => unimplemented!(),
             &Type::TypedRef(ref pred_name) => format!("{}", pred_name),
             &Type::Domain(ref pred_name) => format!("{}", pred_name),
         }
@@ -216,6 +217,7 @@ impl Type {
         match self {
             Type::Bool => TypeId::Bool,
             Type::Int => TypeId::Int,
+            Type::Ref => unimplemented!(),
             Type::TypedRef(_) => TypeId::Ref,
             Type::Domain(_) => TypeId::Domain,
         }

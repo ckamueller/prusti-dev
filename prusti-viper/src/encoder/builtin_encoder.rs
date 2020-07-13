@@ -53,6 +53,7 @@ impl BuiltinEncoder {
         match function {
             BuiltinFunctionKind::Unreachable(vir::Type::Int) => format!("builtin$unreach_int"),
             BuiltinFunctionKind::Unreachable(vir::Type::Bool) => format!("builtin$unreach_bool"),
+            BuiltinFunctionKind::Unreachable(vir::Type::Ref) => unimplemented!(),
             BuiltinFunctionKind::Unreachable(vir::Type::TypedRef(_)) => {
                 format!("builtin$unreach_ref")
             }
@@ -61,6 +62,7 @@ impl BuiltinEncoder {
             }
             BuiltinFunctionKind::Undefined(vir::Type::Int) => format!("builtin$undef_int"),
             BuiltinFunctionKind::Undefined(vir::Type::Bool) => format!("builtin$undef_bool"),
+            BuiltinFunctionKind::Undefined(vir::Type::Ref) => unimplemented!(),
             BuiltinFunctionKind::Undefined(vir::Type::TypedRef(_)) => format!("builtin$undef_ref"),
             BuiltinFunctionKind::Undefined(vir::Type::Domain(_)) => format!("builtin$undef_doman"),
         }
