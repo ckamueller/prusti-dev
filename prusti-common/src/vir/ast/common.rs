@@ -143,7 +143,7 @@ impl Ord for PermAmount {
 pub enum Type {
     Int,
     Bool,
-    Ref, // At the moment we don't need this
+    Ref,
     /// TypedRef: the first parameter is the name of the predicate that encodes the type
     TypedRef(String),
     Set(Box<Type>),
