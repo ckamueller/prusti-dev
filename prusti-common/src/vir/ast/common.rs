@@ -174,7 +174,7 @@ impl fmt::Display for Type {
 impl Type {
     pub fn is_ref(&self) -> bool {
         match self {
-            //&Type::Ref |
+            &Type::Ref |
             &Type::TypedRef(_) => true,
             _ => false,
         }
