@@ -423,7 +423,7 @@ pub fn default_walk_expr<T: ExprWalker>(this: &mut T, e: &Expr) {
         Expr::AddrOf(ref e, ref t, ref p) => this.walk_addr_of(e, t, p),
         Expr::Const(ref x, ref p) => this.walk_const(x, p),
         Expr::LabelledOld(ref x, ref y, ref p) => this.walk_labelled_old(x, y, p),
-        Expr::Old(ref e, ref p) => this.walk_old(x, y, p),
+        Expr::Old(ref e, ref p) => this.walk_old(e, p),
         Expr::MagicWand(ref x, ref y, ref b, ref p) => this.walk_magic_wand(x, y, b, p),
         Expr::PredicateAccessPredicate(ref x, ref y, z, ref p) => {
             this.walk_predicate_access_predicate(x, y, z, p)
@@ -675,7 +675,7 @@ pub fn default_fallible_fold_expr<U, T: FallibleExprFolder<Error=U>>(
         Expr::AddrOf(e, t, p) => this.fallible_fold_addr_of(e, t, p),
         Expr::Const(x, p) => this.fallible_fold_const(x, p),
         Expr::LabelledOld(x, y, p) => this.fallible_fold_labelled_old(x, y, p),
-        Expr::Old(r, p) => this.fallible_fold_old(e, p),
+        Expr::Old(e, p) => this.fallible_fold_old(e, p),
         Expr::MagicWand(x, y, b, p) => this.fallible_fold_magic_wand(x, y, b, p),
         Expr::PredicateAccessPredicate(x, y, z, p) => {
             this.fallible_fold_predicate_access_predicate(x, y, z, p)
