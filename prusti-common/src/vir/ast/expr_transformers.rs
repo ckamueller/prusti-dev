@@ -91,6 +91,13 @@ pub trait ExprFolder: Sized {
     ) -> Expr {
         Expr::LabelledOld(label, self.fold_boxed(body), pos)
     }
+    fn fold_old(
+        &mut self,
+        body: Box<Expr>,
+        pos: Position
+    ) -> Expr {
+        Expr::Old(self.fold_boxed(body), pos)
+    }
     fn fold_magic_wand(
         &mut self,
         lhs: Box<Expr>,
@@ -245,6 +252,7 @@ pub fn default_fold_expr<T: ExprFolder>(this: &mut T, e: Expr) -> Expr {
         Expr::AddrOf(e, t, p) => this.fold_addr_of(e, t, p),
         Expr::Const(x, p) => this.fold_const(x, p),
         Expr::LabelledOld(x, y, p) => this.fold_labelled_old(x, y, p),
+        Expr::Old(e, p) => this.fold_old(e, p),
         Expr::MagicWand(x, y, b, p) => this.fold_magic_wand(x, y, b, p),
         Expr::PredicateAccessPredicate(x, y, z, p) => {
             this.fold_predicate_access_predicate(x, y, z, p)
@@ -286,6 +294,9 @@ pub trait ExprWalker: Sized {
     }
     fn walk_const(&mut self, _const: &Const, _pos: &Position) {}
     fn walk_labelled_old(&mut self, _label: &str, body: &Expr, _pos: &Position) {
+        self.walk(body);
+    }
+    fn walk_old(&mut self, body: &Expr, _pos: &Position) {
         self.walk(body);
     }
     fn walk_magic_wand(
@@ -412,6 +423,7 @@ pub fn default_walk_expr<T: ExprWalker>(this: &mut T, e: &Expr) {
         Expr::AddrOf(ref e, ref t, ref p) => this.walk_addr_of(e, t, p),
         Expr::Const(ref x, ref p) => this.walk_const(x, p),
         Expr::LabelledOld(ref x, ref y, ref p) => this.walk_labelled_old(x, y, p),
+        Expr::Old(ref e, ref p) => this.walk_old(x, y, p),
         Expr::MagicWand(ref x, ref y, ref b, ref p) => this.walk_magic_wand(x, y, b, p),
         Expr::PredicateAccessPredicate(ref x, ref y, z, ref p) => {
             this.walk_predicate_access_predicate(x, y, z, p)
@@ -465,6 +477,13 @@ pub trait FallibleExprFolder: Sized {
         pos: Position
     ) -> Result<Expr, Self::Error> {
         Ok(Expr::LabelledOld(label, self.fallible_fold_boxed(body)?, pos))
+    }
+    fn fallible_fold_old(
+        &mut self,
+        body: Box<Expr>,
+        pos: Position
+    ) -> Result<Expr, Self::Error> {
+        Ok(Expr::Old(self.fallible_fold_boxed(body)?, pos))
     }
     fn fallible_fold_magic_wand(
         &mut self,
@@ -656,6 +675,7 @@ pub fn default_fallible_fold_expr<U, T: FallibleExprFolder<Error=U>>(
         Expr::AddrOf(e, t, p) => this.fallible_fold_addr_of(e, t, p),
         Expr::Const(x, p) => this.fallible_fold_const(x, p),
         Expr::LabelledOld(x, y, p) => this.fallible_fold_labelled_old(x, y, p),
+        Expr::Old(r, p) => this.fallible_fold_old(e, p),
         Expr::MagicWand(x, y, b, p) => this.fallible_fold_magic_wand(x, y, b, p),
         Expr::PredicateAccessPredicate(x, y, z, p) => {
             this.fallible_fold_predicate_access_predicate(x, y, z, p)

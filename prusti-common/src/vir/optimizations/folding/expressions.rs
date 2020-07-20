@@ -332,6 +332,7 @@ impl ast::ExprFolder for ExprOptimizer {
 
     fn fold(&mut self, expr: ast::Expr) -> ast::Expr {
         match expr {
+            ast::Expr::Old(..) |
             ast::Expr::LabelledOld(..) => {
                 if expr.is_place() {
                     self.requirements.insert(expr.clone());

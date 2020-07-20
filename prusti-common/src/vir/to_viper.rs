@@ -305,6 +305,9 @@ impl<'v> ToViper<'v, viper::Expr<'v>> for Expr {
             &Expr::LabelledOld(ref old_label, ref expr, ref pos) => {
                 ast.labelled_old_with_pos(expr.to_viper(ast), old_label, pos.to_viper(ast))
             }
+            &Expr::Old(ref expr, ref pos) => {
+                ast.old_with_pos(expr.to_viper(ast), pos.to_viper(ast))
+            }
             &Expr::MagicWand(ref lhs, ref rhs, maybe_borrow, ref pos) => {
                 let borrow_id = if let Some(borrow) = maybe_borrow {
                     borrow_id(borrow) as isize

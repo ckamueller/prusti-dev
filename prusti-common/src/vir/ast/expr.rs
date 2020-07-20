@@ -23,6 +23,7 @@ pub enum Expr {
     /// The inverse of a `val_ref` field access
     AddrOf(Box<Expr>, Type, Position),
     LabelledOld(String, Box<Expr>, Position),
+    Old(Box<Expr>, Position),
     Const(Const, Position),
     /// lhs, rhs, borrow, position
     MagicWand(Box<Expr>, Box<Expr>, Option<Borrow>, Position),
@@ -110,6 +111,9 @@ impl fmt::Display for Expr {
             }
             Expr::LabelledOld(ref label, ref expr, ref _pos) => {
                 write!(f, "old[{}]({})", label, expr)
+            }
+            Expr::Old(ref expr, ref _pos) => {
+                write!(f, "old({})", expr)
             }
             Expr::MagicWand(ref left, ref right, ref borrow, ref _pos) => {
                 write!(f, "({}) {:?} --* ({})", left, borrow, right)
@@ -251,6 +255,7 @@ impl Expr {
             Expr::AddrOf(_, _, p) => p,
             Expr::Const(_, p) => p,
             Expr::LabelledOld(_, _, p) => p,
+            Expr::Old(_, p) => p,
             Expr::MagicWand(_, _, _, p) => p,
             Expr::PredicateAccessPredicate(_, _, _, p) => p,
             Expr::FieldAccessPredicate(_, _, p) => p,
@@ -275,6 +280,7 @@ impl Expr {
             Expr::AddrOf(e, t, _) => Expr::AddrOf(e, t, pos),
             Expr::Const(x, _) => Expr::Const(x, pos),
             Expr::LabelledOld(x, y, _) => Expr::LabelledOld(x, y, pos),
+            Expr::Old(e, _) => Expr::Old(e, pos),
             Expr::MagicWand(x, y, b, _) => Expr::MagicWand(x, y, b, pos),
             Expr::PredicateAccessPredicate(x, y, z, _) => {
                 Expr::PredicateAccessPredicate(x, y, z, pos)
@@ -330,6 +336,10 @@ impl Expr {
 
     pub fn labelled_old(label: &str, expr: Expr) -> Self {
         Expr::LabelledOld(label.to_string(), box expr, Position::default())
+    }
+
+    pub fn old_expr(expr: Expr) -> Self {
+        Expr::Old(box expr, Position::default())
     }
 
     pub fn not(expr: Expr) -> Self {
@@ -578,6 +588,7 @@ impl Expr {
             | &Expr::Field(ref base, _, _)
             | &Expr::AddrOf(ref base, _, _)
             | &Expr::LabelledOld(_, ref base, _)
+            | &Expr::Old(ref base, _)
             | &Expr::Unfolding(_, _, ref base, _, _, _) => base.is_place(),
             _ => false,
         }
@@ -598,6 +609,7 @@ impl Expr {
             | &Expr::Field(ref base, _, _)
             | &Expr::AddrOf(ref base, _, _)
             | &Expr::LabelledOld(_, ref base, _)
+            | &Expr::Old(ref base, _)
             | &Expr::Unfolding(_, _, ref base, _, _, _) => base.place_depth() + 1,
             x => unreachable!("{:?}", x),
         }
@@ -620,6 +632,7 @@ impl Expr {
             | &Expr::Field(box ref base, _, _)
             | &Expr::AddrOf(box ref base, _, _) => Some(base),
             &Expr::LabelledOld(_, _, _) => None,
+            &Expr::Old( _, _) => None,
             &Expr::Unfolding(_, _, _, _, _, _) => None,
             ref x => unreachable!("{}", x),
         }
@@ -755,6 +768,7 @@ impl Expr {
         match self {
             &Expr::Local(ref var, _) => var.clone(),
             &Expr::LabelledOld(_, ref base, _) |
+            &Expr::Old(ref base, _) |
             &Expr::Unfolding(_, _, ref base, _, _, _) => {
                 base.get_base()
             }
@@ -846,6 +860,7 @@ impl Expr {
                 &typ
             },
             &Expr::LabelledOld(_, box ref base, _)
+            | &Expr::Old(box ref base, _)
             | &Expr::Unfolding(_, _, box ref base, _, _, _) => {
                 base.get_type()
             }
@@ -1062,6 +1077,7 @@ impl Expr {
                     | Expr::Field(..)
                     | Expr::AddrOf(..)
                     | Expr::LabelledOld(..)
+                    | Expr::Old(..)
                     | Expr::ForAll(..)
                     | Expr::LetExpr(..)
                     | Expr::FuncApp(..)
@@ -1198,6 +1214,10 @@ impl PartialEq for Expr {
                 Expr::LabelledOld(ref self_label, box ref self_base, _),
                 Expr::LabelledOld(ref other_label, box ref other_base, _),
             ) => (self_label, self_base) == (other_label, other_base),
+            (
+                Expr::Old(box ref self_base, _),
+                Expr::Old(box ref other_base, _),
+            ) => self_base == other_base,
             (Expr::Const(ref self_const, _), Expr::Const(ref other_const, _)) => {
                 self_const == other_const
             }
@@ -1264,6 +1284,7 @@ impl Hash for Expr {
             Expr::Field(box ref base, ref field, _) => (base, field).hash(state),
             Expr::AddrOf(box ref base, ref typ, _) => (base, typ).hash(state),
             Expr::LabelledOld(ref label, box ref base, _) => (label, base).hash(state),
+            Expr::Old(box ref base, _) => ("old", base).hash(state),
             Expr::Const(ref const_expr, _) => const_expr.hash(state),
             Expr::MagicWand(box ref lhs, box ref rhs, b, _) => (lhs, rhs, b).hash(state),
             Expr::PredicateAccessPredicate(ref name, ref arg, perm, _) => {

@@ -1333,7 +1333,7 @@ impl<'b, 'a: 'b> FallibleExprFolder for ExprReplacer<'b, 'a> {
             let new_base = self.fallible_fold(base)?;
             debug_assert!(
                 match new_base {
-                    vir::Expr::Local(..) | vir::Expr::LabelledOld(..) => true,
+                    vir::Expr::Local(..) | vir::Expr::LabelledOld(..) | vir::Expr::Old(..) => true,
                     _ => false,
                 },
                 "new_base = {}",

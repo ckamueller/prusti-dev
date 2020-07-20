@@ -201,6 +201,7 @@ impl RequiredPermissionsGetter for vir::Expr {
             }
 
             vir::Expr::LabelledOld(_label, _expr, _) => HashSet::new(),
+            vir::Expr::Old(_expr, _) => HashSet::new(),
 
             vir::Expr::PredicateAccessPredicate(_, box place, _perm_amount, _) => {
                 debug_assert!(place.is_place());
@@ -340,6 +341,7 @@ impl ExprPermissionsGetter for vir::Expr {
             | vir::Expr::Variant(_, _, _)
             | vir::Expr::AddrOf(_, _, _)
             | vir::Expr::LabelledOld(_, _, _)
+            | vir::Expr::Old( _, _)
             | vir::Expr::Const(_, _)
             | vir::Expr::FuncApp(..)
             | vir::Expr::DomainFuncApp(..)
