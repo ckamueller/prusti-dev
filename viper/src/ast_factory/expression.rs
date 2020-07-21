@@ -884,6 +884,17 @@ impl<'a> AstFactory<'a> {
         )
     }
 
+    pub fn any_set_union_with_pos(&self, elem: Expr, set: Expr, pos: Position) -> Expr<'a> {
+        build_ast_node_with_pos!(
+            self,
+            Expr,
+            ast::AnySetUnion,
+            elem.to_jobject(),
+            set.to_jobject(),
+            pos.to_jobject()
+        )
+    }
+
     pub fn any_set_intersection(&self, left: Expr, right: Expr) -> Expr<'a> {
         build_ast_node!(
             self,
