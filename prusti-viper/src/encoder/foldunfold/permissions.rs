@@ -202,6 +202,7 @@ impl RequiredPermissionsGetter for vir::Expr {
 
             vir::Expr::LabelledOld(_label, _expr, _) => HashSet::new(),
             vir::Expr::Old(_expr, _) => HashSet::new(),
+            vir::Expr::ExplicitSet(_args, _) => unimplemented!(),
 
             vir::Expr::PredicateAccessPredicate(_, box place, _perm_amount, _) => {
                 debug_assert!(place.is_place());
@@ -346,6 +347,8 @@ impl ExprPermissionsGetter for vir::Expr {
             | vir::Expr::FuncApp(..)
             | vir::Expr::DomainFuncApp(..)
             | vir::Expr::InhaleExhale(..) => HashSet::new(),
+
+            vir::Expr::ExplicitSet(_, _) => unimplemented!(),
 
             vir::Expr::Unfolding(_, args, expr, perm_amount, variant, _) => {
                 assert_eq!(args.len(), 1);
