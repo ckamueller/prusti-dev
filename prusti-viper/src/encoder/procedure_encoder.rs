@@ -114,13 +114,17 @@ impl<'p, 'v: 'p, 'r: 'v, 'a: 'r, 'tcx: 'a> ProcedureEncoder<'p, 'v, 'r, 'a, 'tcx
             // method name
             encoder.encode_item_name(def_id),
             // formal args
-            mir.arg_count,
+            vec![],
             // formal returns
             vec![],
             // local vars
             vec![],
             // reserved labels
             vec![],
+            // preconditions
+            vec![],
+            // postconditions
+            vec![]
         );
 
         ProcedureEncoder {

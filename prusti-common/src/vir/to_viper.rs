@@ -383,9 +383,12 @@ impl<'v> ToViper<'v, viper::Expr<'v>> for Expr {
                 }
                 BinOpKind::Implies => {
                     ast.implies_with_pos(left.to_viper(ast), right.to_viper(ast), pos.to_viper(ast))
-                },
+                }
                 BinOpKind::SetContains => {
                     ast.any_set_contains_with_pos(left.to_viper(ast), right.to_viper(ast), pos.to_viper(ast))
+                }
+                BinOpKind::SetUnion => {
+                    ast.any_set_union_with_pos(left.to_viper(ast), right.to_viper(ast), pos.to_viper(ast))
                 }
             },
             &Expr::Unfolding(

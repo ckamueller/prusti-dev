@@ -40,13 +40,17 @@ impl<'p, 'v: 'p, 'r: 'v, 'a: 'r, 'tcx: 'a> StubProcedureEncoder<'p, 'v, 'r, 'a, 
             // method name
             self.encoder.encode_item_name(self.def_id),
             // formal args
-            self.mir.arg_count,
+            vec![],
             // formal returns
             vec![],
             // local vars
             vec![],
             // reserved labels
             vec![],
+            // preconditions
+            vec![],
+            // postconditions,
+            vec![]
         );
 
         // Declare the formal return
