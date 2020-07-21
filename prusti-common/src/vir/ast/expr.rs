@@ -32,6 +32,7 @@ pub enum Expr {
     FieldAccessPredicate(Box<Expr>, PermAmount, Position),
     UnaryOp(UnaryOpKind, Box<Expr>, Position),
     BinOp(BinOpKind, Box<Expr>, Box<Expr>, Position),
+    ExplicitSet(Vec<Expr>, Position),
     /// Unfolding: predicate name, predicate_args, in_expr, permission amount, enum variant
     Unfolding(String, Vec<Expr>, Box<Expr>, PermAmount, MaybeEnumVariantIndex, Position),
     /// Cond: guard, then_expr, else_expr
@@ -102,6 +103,12 @@ impl fmt::Display for Expr {
             Expr::Const(ref value, ref _pos) => write!(f, "{}", value),
             Expr::BinOp(op, ref left, ref right, ref _pos) => {
                 write!(f, "({}) {} ({})", left, op, right)
+            }
+            Expr::ExplicitSet(ref args, ref _pos) => {
+                write!(f, "Set({})", args.iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>()
+                        .join(", "))
             }
             Expr::UnaryOp(op, ref expr, ref _pos) => write!(f, "{}({})", op, expr),
             Expr::PredicateAccessPredicate(ref pred_name, ref arg, perm, ref _pos) => {
@@ -263,6 +270,7 @@ impl Expr {
             Expr::FieldAccessPredicate(_, _, p) => p,
             Expr::UnaryOp(_, _, p) => p,
             Expr::BinOp(_, _, _, p) => p,
+            Expr::ExplicitSet(_, p) => p,
             Expr::Unfolding(_, _, _, _, _, p) => p,
             Expr::Cond(_, _, _, p) => p,
             Expr::ForAll(_, _, _, p) => p,
@@ -290,6 +298,7 @@ impl Expr {
             Expr::FieldAccessPredicate(x, y, _) => Expr::FieldAccessPredicate(x, y, pos),
             Expr::UnaryOp(x, y, _) => Expr::UnaryOp(x, y, pos),
             Expr::BinOp(x, y, z, _) => Expr::BinOp(x, y, z, pos),
+            Expr::ExplicitSet(xs, _) => Expr::ExplicitSet(xs, pos),
             Expr::Unfolding(x, y, z, perm, variant, _) => {
                 Expr::Unfolding(x, y, z, perm, variant, pos)
             },
@@ -1071,6 +1080,7 @@ impl Expr {
                     Expr::BinOp(..)
                     | Expr::MagicWand(..)
                     | Expr::Unfolding(..)
+                    | Expr::ExplicitSet(..)
                     | Expr::Cond(..)
                     | Expr::UnaryOp(..)
                     | Expr::Const(..)
@@ -1295,6 +1305,7 @@ impl Hash for Expr {
             Expr::FieldAccessPredicate(box ref base, perm, _) => (base, perm).hash(state),
             Expr::UnaryOp(op, box ref arg, _) => (op, arg).hash(state),
             Expr::BinOp(op, box ref left, box ref right, _) => (op, left, right).hash(state),
+            Expr::ExplicitSet(ref args, _) => ("set", args).hash(state),
             Expr::Cond(box ref cond, box ref then_expr, box ref else_expr, _) => {
                 (cond, then_expr, else_expr).hash(state)
             }

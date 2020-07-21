@@ -861,6 +861,16 @@ impl<'a> AstFactory<'a> {
         )
     }
 
+    pub fn explicit_set_with_pos(&self, elems: &[Expr], pos: Position) -> Expr<'a> {
+        build_ast_node_with_pos!(
+            self,
+            Expr,
+            ast::ExplicitSet,
+            self.jni.new_seq(&map_to_jobjects!(elems)),
+            pos.to_jobject()
+        )
+    }
+
     pub fn empty_multiset(&self, elem_type: Type) -> Expr<'a> {
         build_ast_node!(self, Expr, ast::EmptyMultiset, elem_type.to_jobject())
     }

@@ -136,7 +136,18 @@ pub trait ExprFolder: Sized {
     ) -> Expr {
         Expr::BinOp(kind, self.fold_boxed(first), self.fold_boxed(second), pos)
     }
-    fn fold_unfolding(
+    fn fold_explicit_set(
+        &mut self,
+        expressions: Vec<Expr>,
+        pos: Position
+    ) -> Expr {
+        Expr::ExplicitSet(expressions
+                              .into_iter()
+                              .map(|e| self.fold(e))
+                              .collect::<Vec<Expr>>(),
+                          pos)
+    }
+        fn fold_unfolding(
         &mut self,
         name: String,
         args: Vec<Expr>,
@@ -260,6 +271,7 @@ pub fn default_fold_expr<T: ExprFolder>(this: &mut T, e: Expr) -> Expr {
         Expr::FieldAccessPredicate(x, y, p) => this.fold_field_access_predicate(x, y, p),
         Expr::UnaryOp(x, y, p) => this.fold_unary_op(x, y, p),
         Expr::BinOp(x, y, z, p) => this.fold_bin_op(x, y, z, p),
+        Expr::ExplicitSet(xs, p) => this.fold_explicit_set(xs, p),
         Expr::Unfolding(x, y, z, perm, variant, p) => {
             this.fold_unfolding(x, y, z, perm, variant, p)
         },
@@ -332,6 +344,11 @@ pub trait ExprWalker: Sized {
     fn walk_bin_op(&mut self, _op: BinOpKind, arg1: &Expr, arg2: &Expr, _pos: &Position) {
         self.walk(arg1);
         self.walk(arg2);
+    }
+    fn walk_explicit_set(&mut self, exprs: &Vec<Expr>, _pos: &Position) {
+        for e in exprs {
+            self.walk(e);
+        }
     }
     fn walk_unfolding(
         &mut self,
@@ -431,6 +448,7 @@ pub fn default_walk_expr<T: ExprWalker>(this: &mut T, e: &Expr) {
         Expr::FieldAccessPredicate(ref x, y, ref p) => this.walk_field_access_predicate(x, y, p),
         Expr::UnaryOp(x, ref y, ref p) => this.walk_unary_op(x, y, p),
         Expr::BinOp(x, ref y, ref z, ref p) => this.walk_bin_op(x, y, z, p),
+        Expr::ExplicitSet(ref xs,ref p) => this.walk_explicit_set(xs, p),
         Expr::Unfolding(ref x, ref y, ref z, perm, ref variant, ref p) => {
             this.walk_unfolding(x, y, z, perm, variant, p)
         },
@@ -535,6 +553,19 @@ pub trait FallibleExprFolder: Sized {
             kind,
             self.fallible_fold_boxed(first)?,
             self.fallible_fold_boxed(second)?,
+            pos
+        ))
+    }
+    fn fallible_fold_explicit_set(
+        &mut self,
+        expressions: Vec<Expr>,
+        pos: Position
+    ) -> Result<Expr, Self::Error> {
+        Ok(Expr::ExplicitSet(
+            expressions.
+                into_iter().
+                map(|e| self.fallible_fold(e))
+                .collect::<Result<Vec<_>, Self::Error>>()?,
             pos
         ))
     }
@@ -683,6 +714,7 @@ pub fn default_fallible_fold_expr<U, T: FallibleExprFolder<Error=U>>(
         Expr::FieldAccessPredicate(x, y, p) => this.fallible_fold_field_access_predicate(x, y, p),
         Expr::UnaryOp(x, y, p) => this.fallible_fold_unary_op(x, y, p),
         Expr::BinOp(x, y, z, p) => this.fallible_fold_bin_op(x, y, z, p),
+        Expr::ExplicitSet(xs, p) => this.fallible_fold_explicit_set(xs, p),
         Expr::Unfolding(x, y, z, perm, variant, p) => {
             this.fallible_fold_unfolding(x, y, z, perm, variant, p)
         },

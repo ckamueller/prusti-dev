@@ -391,6 +391,7 @@ impl<'v> ToViper<'v, viper::Expr<'v>> for Expr {
                     ast.any_set_union_with_pos(left.to_viper(ast), right.to_viper(ast), pos.to_viper(ast))
                 }
             },
+            &Expr::ExplicitSet(ref args, ref pos) => ast.explicit_set_with_pos(&args.to_viper(ast)[..], pos.to_viper(ast)),
             &Expr::Unfolding(
                 ref predicate_name,
                 ref args,
