@@ -74,7 +74,7 @@ pub fn compute_identifier(name: &str, formal_args: &[LocalVar], return_type: &Ty
             Type::Bool => "$bool$",
             Type::Ref => "ref$",
             Type::TypedRef(ref name) => name,
-            Type::Set(_) => unimplemented!(),
+            Type::Set(_) => "$set$",
             Type::Domain(ref name) => name,
         }
     }
