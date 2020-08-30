@@ -960,6 +960,16 @@ impl<'a> AstFactory<'a> {
         build_ast_node!(self, Expr, ast::AnySetCardinality, set.to_jobject())
     }
 
+    pub fn any_set_cardinality_with_pos(&self, set: Expr, pos: Position) -> Expr<'a> {
+        build_ast_node_with_pos!(
+            self,
+            Expr,
+            ast::AnySetCardinality,
+            set.to_jobject(),
+            pos.to_jobject()
+        )
+    }
+
     pub fn simplified_expression(&self, expr: Expr) -> Expr<'a> {
         let simplifier_object_wrapper = ast::utility::Simplifier_object::with(self.env);
         let obj = self.jni.unwrap_result(

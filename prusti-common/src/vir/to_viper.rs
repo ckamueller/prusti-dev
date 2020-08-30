@@ -340,6 +340,7 @@ impl<'v> ToViper<'v, viper::Expr<'v>> for Expr {
             &Expr::UnaryOp(op, ref expr, ref pos) => match op {
                 UnaryOpKind::Not => ast.not_with_pos(expr.to_viper(ast), pos.to_viper(ast)),
                 UnaryOpKind::Minus => ast.minus_with_pos(expr.to_viper(ast), pos.to_viper(ast)),
+                UnaryOpKind::Cardinality => ast.any_set_cardinality_with_pos(expr.to_viper(ast), pos.to_viper(ast)),
             },
             &Expr::BinOp(op, ref left, ref right, ref pos) => match op {
                 BinOpKind::EqCmp => {
